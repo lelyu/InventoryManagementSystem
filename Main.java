@@ -1,20 +1,19 @@
 import java.util.Scanner;
 
 public class Main {
-
     public static void main(String[] args) {
         Inventory inventory = Inventory.getInstance();
         LowStockNotifier lowStockNotifier = new LowStockNotifier(inventory, 5);
         Scanner scanner = new Scanner(System.in);
 
         while (true) {
-            System.out.println("Inventory Management System");
+            System.out.println("\n--- Inventory Management System ---");
             System.out.println("1. Add item");
             System.out.println("2. Remove item");
             System.out.println("3. Update item");
             System.out.println("4. Generate report");
             System.out.println("5. Exit");
-            System.out.print("Choose an option (1-5): ");
+            System.out.print("\nChoose an option (1-5): ");
 
             int choice = scanner.nextInt();
             scanner.nextLine(); // Consume newline left-over
@@ -22,27 +21,31 @@ public class Main {
             switch (choice) {
                 case 1:
                     // Add item
+                    System.out.println("\n--- Add Item ---");
                     addItem(scanner, inventory);
                     break;
                 case 2:
                     // Remove item
+                    System.out.println("\n--- Remove Item ---");
                     removeItem(scanner, inventory);
                     break;
                 case 3:
                     // Update item
+                    System.out.println("\n--- Update Item ---");
                     updateItem(scanner, inventory);
                     break;
                 case 4:
                     // Generate report
+                    System.out.println("\n--- Generate Report ---");
                     generateReport(scanner, inventory);
                     break;
                 case 5:
                     // Exit
-                    System.out.println("Exiting...");
+                    System.out.println("\nExiting...");
                     scanner.close();
                     System.exit(0);
                 default:
-                    System.out.println("Invalid option. Please choose a number between 1 and 5.");
+                    System.out.println("\nInvalid option. Please choose a number between 1 and 5.");
             }
         }
     }
