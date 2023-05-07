@@ -1,4 +1,4 @@
-public class LowStockNotifier {
+public class LowStockNotifier implements InventoryObserver {
     private Inventory inventory;
     private int lowStockThreshold;
 
@@ -16,7 +16,10 @@ public class LowStockNotifier {
     private void notifyLowStock(Item item) {
         System.out.println("Low stock alert for item: " + item.getName() + " (ID: " + item.getId()
                 + "). Current stock: " + item.getStockLevel());
-        // Add any additional logic for notifying relevant parties (e.g., sending an
-        // email or SMS)
+    }
+
+    @Override
+    public void onItemUpdated(Item item) {
+        update(item);
     }
 }

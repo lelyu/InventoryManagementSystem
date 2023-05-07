@@ -17,7 +17,7 @@ public class ItemDetailsReportGenerator implements ReportGenerator {
                     item.getStockLevel()));
         }
 
-        String title = "Item Details Report";
+        String title = "\nItem Details Report";
         String content = contentBuilder.toString();
 
         return new Report(title, content);

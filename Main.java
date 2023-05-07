@@ -1,13 +1,32 @@
+import java.util.InputMismatchException;
 import java.util.Scanner;
 
 public class Main {
     public static void main(String[] args) {
         Inventory inventory = Inventory.getInstance();
-        LowStockNotifier lowStockNotifier = new LowStockNotifier(inventory, 5);
         Scanner scanner = new Scanner(System.in);
+        System.out.println("\n--- Inventory Management System ---");
+
+        int lowStockThreshold = -1;
+        while (lowStockThreshold < 0) {
+            try {
+                System.out.print("\nEnter low stock threshold for itmes in the inventory: ");
+                lowStockThreshold = scanner.nextInt();
+                scanner.nextLine(); // Consume newline left-over
+                if (lowStockThreshold < 0) {
+                    System.out.println("Invalid input. Threshold must be a non-negative integer.");
+                }
+            } catch (InputMismatchException e) {
+                System.out.println("Invalid input. Please enter a valid non-negative integer.");
+                scanner.nextLine(); // Consume invalid input
+            }
+        }
+
+        LowStockNotifier lowStockNotifier = new LowStockNotifier(inventory, lowStockThreshold);
+        inventory.addObserver(lowStockNotifier);
+        ;
 
         while (true) {
-            System.out.println("\n--- Inventory Management System ---");
             System.out.println("1. Add item");
             System.out.println("2. Remove item");
             System.out.println("3. Update item");
@@ -22,7 +41,7 @@ public class Main {
                 case 1:
                     // Add item
                     System.out.println("\n--- Add Item ---");
-                    addItem(scanner, inventory);
+                    addItem(scanner, inventory, lowStockNotifier);
                     break;
                 case 2:
                     // Remove item
@@ -32,7 +51,7 @@ public class Main {
                 case 3:
                     // Update item
                     System.out.println("\n--- Update Item ---");
-                    updateItem(scanner, inventory);
+                    updateItem(scanner, inventory, lowStockNotifier);
                     break;
                 case 4:
                     // Generate report
@@ -50,10 +69,10 @@ public class Main {
         }
     }
 
-    public static void addItem(Scanner scanner, Inventory inventory) {
+    public static void addItem(Scanner scanner, Inventory inventory, LowStockNotifier lowStockNotifier) {
         while (true) {
             try {
-                System.out.print("Enter item ID (or type 'back' to go back): ");
+                System.out.print("\nEnter item ID (or type 'back' to go back): ");
                 String input = scanner.nextLine();
 
                 if (input.equalsIgnoreCase("back")) {
@@ -83,6 +102,8 @@ public class Main {
                 boolean itemAdded = ((AddItemCommand) command).getInventory().addItem(item);
                 if (itemAdded) {
                     command.execute();
+                    lowStockNotifier.update(item);
+                    System.out.println("\nItem added successfully.\n");
                 } else {
                     System.out.println("ID already exists. Returning to the main menu.");
                 }
@@ -92,6 +113,9 @@ public class Main {
                 System.out.println("Invalid input. Please enter a valid number.");
             } catch (IllegalArgumentException e) {
                 System.out.println(e.getMessage());
+            } catch (InputMismatchException e) {
+                System.out.println("Invalid input. Please enter a valid non-negative integer.");
+                scanner.nextLine(); // Consume invalid input
             }
         }
     }
@@ -100,7 +124,7 @@ public class Main {
         while (true) {
             try {
                 System.out.println(
-                        "Enter the ID of the item you want to remove, or type 'back' to return to the main menu:");
+                        "\nEnter the ID of the item you want to remove, or type 'back' to return to the main menu:");
                 String input = scanner.next();
                 if (input.equalsIgnoreCase("back")) {
                     break;
@@ -115,19 +139,22 @@ public class Main {
                 InventoryCommand command = new RemoveItemCommand(inventory, id);
                 command.execute();
 
-                System.out.println("Item removed successfully.");
+                System.out.println("\nItem removed successfully.\n");
                 break;
             } catch (NumberFormatException e) {
                 System.out.println(
                         "Invalid input. Please enter a valid item ID or type 'back' to return to the main menu.");
+            } catch (InputMismatchException e) {
+                System.out.println("Invalid input. Please enter a valid non-negative integer.");
+                scanner.nextLine(); // Consume invalid input
             }
         }
     }
 
-    public static void updateItem(Scanner scanner, Inventory inventory) {
+    public static void updateItem(Scanner scanner, Inventory inventory, LowStockNotifier lowStockNotifier) {
         while (true) {
             try {
-                System.out.print("Enter item ID (or type 'back' to go back): ");
+                System.out.print("\nEnter item ID (or type 'back' to go back): ");
                 String input = scanner.nextLine();
 
                 if (input.equalsIgnoreCase("back")) {
@@ -155,12 +182,15 @@ public class Main {
                 Item newItem = new Item(id, name, price, stockLevel);
                 InventoryCommand command = new UpdateItemCommand(inventory, newItem);
                 command.execute();
-
+                System.out.println("\nItem updated successfully.\n");
                 break;
             } catch (NumberFormatException e) {
                 System.out.println("Invalid input. Please enter a valid number.");
             } catch (IllegalArgumentException e) {
                 System.out.println(e.getMessage());
+            } catch (InputMismatchException e) {
+                System.out.println("Invalid input. Please enter a valid non-negative integer.");
+                scanner.nextLine(); // Consume invalid input
             }
         }
     }
@@ -169,7 +199,7 @@ public class Main {
         ReportGenerator reportGenerator = null;
 
         while (reportGenerator == null) {
-            System.out.println("Select report type:");
+            System.out.println("\nSelect report type:");
             System.out.println("1. Total Stock Value");
             System.out.println("2. Total Items");
             System.out.println("3. Item Details");
