@@ -10,7 +10,7 @@ public class Main {
         int lowStockThreshold = -1;
         while (lowStockThreshold < 0) {
             try {
-                System.out.print("\nEnter low stock threshold for itmes in the inventory: ");
+                System.out.print("\nEnter low stock threshold for items in the inventory: ");
                 lowStockThreshold = scanner.nextInt();
                 scanner.nextLine(); // Consume newline left-over
                 if (lowStockThreshold < 0) {
@@ -74,28 +74,41 @@ public class Main {
             try {
                 System.out.print("\nEnter item ID (or type 'back' to go back): ");
                 String input = scanner.nextLine();
-
                 if (input.equalsIgnoreCase("back")) {
                     return;
                 }
 
                 int id = Integer.parseInt(input);
+                if (inventory.getItem(id) != null) {
+                    System.out.println("ID already exists. Returning to the main menu.");
+                    return;
+                }
 
-                System.out.print("Enter item name: ");
+                System.out.print("Enter item name (or type 'back' to go back): ");
                 String name = scanner.nextLine();
+                if (name.equalsIgnoreCase("back")) {
+                    return;
+                }
 
-                System.out.print("Enter item price: ");
-                double price = scanner.nextDouble();
+                System.out.print("Enter item price (or type 'back' to go back): ");
+                input = scanner.nextLine();
+                if (input.equalsIgnoreCase("back")) {
+                    return;
+                }
+                double price = Double.parseDouble(input);
                 if (price < 0) {
                     throw new IllegalArgumentException("Price cannot be negative.");
                 }
 
-                System.out.print("Enter item stock level: ");
-                int stockLevel = scanner.nextInt();
+                System.out.print("Enter item stock level (or type 'back' to go back): ");
+                input = scanner.nextLine();
+                if (input.equalsIgnoreCase("back")) {
+                    return;
+                }
+                int stockLevel = Integer.parseInt(input);
                 if (stockLevel < 0) {
                     throw new IllegalArgumentException("Stock level cannot be negative.");
                 }
-                scanner.nextLine(); // Consume newline left-over
 
                 Item item = new Item(id, name, price, stockLevel);
                 InventoryCommand command = new AddItemCommand(inventory, item);
@@ -105,7 +118,7 @@ public class Main {
                     lowStockNotifier.update(item);
                     System.out.println("\nItem added successfully.\n");
                 } else {
-                    System.out.println("ID already exists. Returning to the main menu.");
+                    System.out.println("Unable to add item. Returning to the main menu.");
                 }
 
                 break;
@@ -113,9 +126,6 @@ public class Main {
                 System.out.println("Invalid input. Please enter a valid number.");
             } catch (IllegalArgumentException e) {
                 System.out.println(e.getMessage());
-            } catch (InputMismatchException e) {
-                System.out.println("Invalid input. Please enter a valid non-negative integer.");
-                scanner.nextLine(); // Consume invalid input
             }
         }
     }
@@ -162,22 +172,36 @@ public class Main {
                 }
 
                 int id = Integer.parseInt(input);
+                if (inventory.getItem(id) == null) {
+                    System.out.println("Item with given ID doesn't exist. Returning to the main menu.");
+                    return;
+                }
 
-                System.out.print("Enter new item name: ");
+                System.out.print("Enter new item name (or type 'back' to go back): ");
                 String name = scanner.nextLine();
+                if (name.equalsIgnoreCase("back")) {
+                    return;
+                }
 
-                System.out.print("Enter new item price: ");
-                double price = scanner.nextDouble();
+                System.out.print("Enter new item price (or type 'back' to go back): ");
+                input = scanner.nextLine();
+                if (input.equalsIgnoreCase("back")) {
+                    return;
+                }
+                double price = Double.parseDouble(input);
                 if (price < 0) {
                     throw new IllegalArgumentException("Price cannot be negative.");
                 }
 
-                System.out.print("Enter new item stock level: ");
-                int stockLevel = scanner.nextInt();
+                System.out.print("Enter new item stock level (or type 'back' to go back): ");
+                input = scanner.nextLine();
+                if (input.equalsIgnoreCase("back")) {
+                    return;
+                }
+                int stockLevel = Integer.parseInt(input);
                 if (stockLevel < 0) {
                     throw new IllegalArgumentException("Stock level cannot be negative.");
                 }
-                scanner.nextLine(); // Consume newline left-over
 
                 Item newItem = new Item(id, name, price, stockLevel);
                 InventoryCommand command = new UpdateItemCommand(inventory, newItem);
@@ -188,9 +212,6 @@ public class Main {
                 System.out.println("Invalid input. Please enter a valid number.");
             } catch (IllegalArgumentException e) {
                 System.out.println(e.getMessage());
-            } catch (InputMismatchException e) {
-                System.out.println("Invalid input. Please enter a valid non-negative integer.");
-                scanner.nextLine(); // Consume invalid input
             }
         }
     }
